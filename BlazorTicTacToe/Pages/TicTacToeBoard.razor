@@ -1,0 +1,100 @@
+﻿@using Models
+
+<h1>Tic Tac Toe Board</h1>
+<style>
+    .cls-board {
+        background: black;
+        width: 150px;
+        height: 150px;
+    }
+
+    .cls-cell {
+        width: 50px;
+        height: 50px;
+        border: solid #fff;
+        color: #fff;
+    }
+</style>
+@if (IsWon)
+{
+    <div>
+        <div class="alert alert-success">
+            You have won !!!!!!!!
+        </div>
+    </div>
+}
+@if (IsDraw)
+{
+    <div>
+        <div class="alert alert-danger">
+           The game is in draw !!!!!!
+        </div>
+    </div>
+}
+<button class="btn btn-primary" @onclick="ResetGame">Restart Game</button>
+
+<table class="cls-board">
+    @for (int rowIndex = 0; rowIndex < 3; rowIndex++)
+    {
+        <tr>
+            @for (int columnIndex = 0; columnIndex < 3; columnIndex++)
+            {
+                int rowNumber = rowIndex;
+                int columnNumber = columnIndex;
+                <td class="cls-cell text-center" @onclick="() => OnCellClick(GameBoard.Cells[rowNumber, columnNumber])">
+                    @if (GameBoard.Cells[rowIndex, columnIndex].MarkType == MarkTypes.Cross)
+                    {
+                        <span>O</span>
+                    }
+                    else if (GameBoard.Cells[rowIndex, columnIndex].MarkType == MarkTypes.Oval)
+                    {
+                        <span>X</span>
+                    }
+                </td>
+
+
+            }
+        </tr>
+    }
+</table>
+
+
+
+@code {
+
+    public Board GameBoard { get; set; }
+
+    public bool IsWon { get; set; }
+    public bool IsDraw { get; set; }
+
+    public void OnCellClick(Cell cell)
+    {
+        if (cell.IsEmpty)
+        {
+            cell.MarkCell(GameBoard.GetCurrentPlayerMark());
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        ResetGame();
+    }
+
+    public void OnWinningGameHandler(object sender, EventArgs args)
+    {
+        IsWon = true;
+    }
+    public void OnGameDrawHandler(object sender, EventArgs args)
+    {
+        IsDraw = true;
+    }
+
+    private void ResetGame()
+    {
+        GameBoard = new Board();
+        GameBoard.OnWinningGame += OnWinningGameHandler;
+        GameBoard.OnGameDraw += OnGameDrawHandler;
+        IsWon = false;
+        IsDraw = false;
+    }
+}
